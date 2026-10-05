@@ -1,0 +1,141 @@
+{
+  "description": "Verified event/exhibition sources from the user's Art List Bay Area. Add a source here to include it in the feed.",
+  "sources": [
+    {
+      "name": "Recology SF Artist in Residence",
+      "url": "https://www.recology.com/recology-san-francisco/artist-in-residence-program/next-exhibition/"
+    },
+    {
+      "name": "Luma YSC",
+      "url": "https://luma.com/ysc"
+    },
+    {
+      "name": "Sequoia Fabrica",
+      "url": "https://bookwhen.com/sequoiafabrica"
+    },
+    {
+      "name": "ICA San Francisco",
+      "url": "https://www.icasf.org/calendar"
+    },
+    {
+      "name": "The Faight",
+      "url": "https://www.thefaight.com/events"
+    },
+    {
+      "name": "Fault Radio",
+      "url": "https://www.faultradio.com/events"
+    },
+    {
+      "name": "SOMArts",
+      "url": "https://somarts.org/whats-on/"
+    },
+    {
+      "name": "HINRG SF Instagram",
+      "url": "https://www.instagram.com/hinrg_sf/"
+    },
+    {
+      "name": "C. Clark Gallery",
+      "url": "https://cclarkgallery.com/exhibitions/current/"
+    },
+    {
+      "name": "Adobe Books",
+      "url": "https://www.adobebooks.com/"
+    },
+    {
+      "name": "Analog Space",
+      "url": "https://analog-space.org/"
+    },
+    {
+      "name": "AS Gallery",
+      "url": "http://www.asgallery.com/"
+    },
+    {
+      "name": "Avenue 12 Gallery",
+      "url": "https://avenue12gallery.com/"
+    },
+    {
+      "name": "Black & White Projects",
+      "url": "https://blackandwhiteprojects.com/category/exhibitions/"
+    },
+    {
+      "name": "Creative Growth",
+      "url": "https://creativegrowth.org/exhibitions"
+    },
+    {
+      "name": "di Rosa Center for Contemporary Art",
+      "url": "https://www.dirosaart.org/"
+    },
+    {
+      "name": "Dream Farm Commons",
+      "url": "https://www.dreamfarmcommons.com/"
+    },
+    {
+      "name": "Eleanor Harwood Gallery",
+      "url": "https://eleanorharwood.com/events/"
+    },
+    {
+      "name": "Et al. etc",
+      "url": "https://etaletc.com/events"
+    },
+    {
+      "name": "Far Out Gallery",
+      "url": "https://www.faroutgallery.com/"
+    },
+    {
+      "name": "Faultline Artspace",
+      "url": "https://www.faultlineartspace.com/"
+    },
+    {
+      "name": "FMOA Oakland",
+      "url": "https://fmoakland.com/home.html"
+    },
+    {
+      "name": "Friends Indeed",
+      "url": "https://friendsindeed.art/news_events"
+    },
+    {
+      "name": "Gallery 16",
+      "url": "https://gallery16.com/exhibitions"
+    },
+    {
+      "name": "Gallery Wendi Norris",
+      "url": "https://gallerywendinorris.com/exhibitions/"
+    },
+    {
+      "name": "Haines Gallery",
+      "url": "https://www.hainesgallery.com/exhibitions/"
+    },
+    {
+      "name": "Strike-Slip Gallery",
+      "url": "https://www.strike-slipgallery.com/"
+    },
+    {
+      "name": "House of Seiko",
+      "url": "https://houseofseiko.info/"
+    },
+    {
+      "name": "Saint Joseph's Arts Society",
+      "url": "https://saintjosephsartssociety.com/saint-josephs-arts-society"
+    },
+    {
+      "name": "The Tint Gallery",
+      "url": "https://www.thetintgallery.com/events"
+    },
+    {
+      "name": "USFCA Thacher Gallery",
+      "url": "https://www.usfca.edu/thacher-gallery/events-exhibitions-calendar"
+    },
+    {
+      "name": "Harvey Milk Photo Center",
+      "url": "https://www.harveymilkphotocenter.org/exhibitions/"
+    },
+    {
+      "name": "The Midway SF",
+      "url": "https://themidwaysf.com/Events/"
+    },
+    {
+      "name": "The Chapel SF",
+      "url": "https://thechapelsf.com/calendar/"
+    }
+  ]
+}
