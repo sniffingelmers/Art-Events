@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import json, re, html
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone, timedelta\nfrom zoneinfo import ZoneInfo
 from email.utils import format_datetime
 from urllib.parse import urljoin
 import requests
