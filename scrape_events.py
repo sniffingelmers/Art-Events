@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json, re, html
-from datetime import datetime, timezone, timedelta\nfrom zoneinfo import ZoneInfo
+from datetime import datetime, timezone, timedelta
+from zoneinfo import ZoneInfo
 from email.utils import format_datetime
 from urllib.parse import urljoin
 import requests
@@ -10,6 +11,7 @@ from dateutil import parser as dateparser
 
 HEADERS = {"User-Agent": "Art-Events-RSS/1.0 (+https://github.com/sniffingelmers/Art-Events)"}
 TIMEOUT = 25
+LOCAL_TZ = ZoneInfo("America/Los_Angeles")
 HORIZON_DAYS = 180
 MAX_ITEMS = 300
 
@@ -26,7 +28,9 @@ def parse_date(value):
         if not dt:
             return None
         if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
+            # Event pages commonly omit the timezone; interpret naive
+            # Bay Area dates in Pacific time rather than UTC.
+            dt = dt.replace(tzinfo=LOCAL_TZ)
         return dt.astimezone(timezone.utc)
     except Exception:
         return None
