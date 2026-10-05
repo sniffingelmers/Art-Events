@@ -144,7 +144,7 @@ def discover_feed_urls(response, page_url):
 
     # Some sites expose feed discovery through the HTTP Link header instead.
     link_header = response.headers.get("Link", "")
-    for match in re.finditer(r"<([^>]+)>\\s*;[^,]*\\brel=[\"']?([^,\"';]+)", link_header, re.I):
+    for match in re.finditer(r"<([^>]+)> *;[^,]*rel=[\"\']?([^,\"\';]+)", link_header, re.I):
         href, rels = match.group(1), match.group(2)
         if "alternate" in {x.strip().lower() for x in rels.split()}:
             candidates.append(urljoin(page_url, href))
