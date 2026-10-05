@@ -24,7 +24,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Build feed
-        run: python build_feed.py
+        run: python scrape_events.py
 
       - name: Commit updated feed
         run: |
