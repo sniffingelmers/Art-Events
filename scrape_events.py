@@ -3,6 +3,7 @@ import json, re, html
 from datetime import datetime, timezone, timedelta
 from email.utils import format_datetime
 from urllib.parse import urljoin
+from email.utils import parsedate_to_datetime
 import requests
 import feedparser
 from bs4 import BeautifulSoup
@@ -130,18 +131,55 @@ def from_html(soup, page_url, source):
             if x: out.append(x)
     return out
 
+def discover_feed_urls(response, page_url):
+    """Find RSS/Atom feeds explicitly advertised by the page."""
+    candidates = []
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    for link in soup.find_all("link", href=True):
+        rel = link.get("rel", [])
+        rels = {str(x).lower() for x in rel} if isinstance(rel, list) else {str(rel).lower()}
+        typ = (link.get("type") or "").lower().split(";")[0].strip()
+        if "alternate" in rels and typ in {"application/rss+xml", "application/atom+xml"}:
+            candidates.append(urljoin(page_url, link["href"]))
+
+    # Some sites expose feed discovery through the HTTP Link header instead.
+    link_header = response.headers.get("Link", "")
+    for match in re.finditer(r"<([^>]+)>\\s*;[^,]*\\brel=[\"']?([^,\"';]+)", link_header, re.I):
+        href, rels = match.group(1), match.group(2)
+        if "alternate" in {x.strip().lower() for x in rels.split()}:
+            candidates.append(urljoin(page_url, href))
+
+    # Keep order, remove duplicates.
+    return list(dict.fromkeys(candidates))
+
+
 def scrape(source):
     name, url = source["name"], source["url"]
     try:
         r=requests.get(url,headers=HEADERS,timeout=TIMEOUT)
         r.raise_for_status()
-        # Try linked RSS/Atom feeds first when the page itself isn't one.
+
+        # 1. If the supplied URL is itself a feed, parse it directly.
         parsed=feedparser.parse(r.content)
         if parsed.entries:
             return from_feed(url,name)
+
         soup=BeautifulSoup(r.text,"html.parser")
+
+        # 2. Follow standards-based RSS/Atom autodiscovery links.
+        #    This is the normal way a webpage advertises a feed without
+        #    making the feed URL part of the human-facing page URL.
+        for feed_url in discover_feed_urls(r, url):
+            results=from_feed(feed_url,name)
+            if results:
+                return results
+
+        # 3. Structured Event data embedded in the page.
         results=from_schema(soup,url,name)
         if results: return results
+
+        # 4. Conservative HTML fallback.
         return from_html(soup,url,name)
     except Exception:
         return []
