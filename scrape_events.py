@@ -3,7 +3,6 @@ import json, re, html
 from datetime import datetime, timezone, timedelta
 from email.utils import format_datetime
 from urllib.parse import urljoin
-from email.utils import parsedate_to_datetime
 import requests
 import feedparser
 from bs4 import BeautifulSoup
