@@ -22,6 +22,7 @@ LINKED_EVENT_RULES = {
     "Letterform Archive": {"path_prefixes": ("/events/",), "limit": 40},
     "Minnesota Street Project": {"path_prefixes": ("/events/",), "limit": 40},
     "ICA San Francisco": {"path_prefixes": ("/events/", "/exhibitions/"), "limit": 30},
+    "SFMOMA": {"path_prefixes": ("/event/",), "limit": 40},
 }
 
 def clean(value):
