@@ -3,7 +3,7 @@ import json, re, html
 from datetime import datetime, timezone, timedelta
 from zoneinfo import ZoneInfo
 from email.utils import format_datetime
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 import requests
 import feedparser
 from bs4 import BeautifulSoup
@@ -12,8 +12,17 @@ from dateutil import parser as dateparser
 HEADERS = {"User-Agent": "Art-Events-RSS/1.0 (+https://github.com/sniffingelmers/Art-Events)"}
 TIMEOUT = 25
 LOCAL_TZ = ZoneInfo("America/Los_Angeles")
-HORIZON_DAYS = 180
+HORIZON_DAYS = 65
 MAX_ITEMS = 300
+
+# Some sites publish event dates on individual public event pages rather than
+# on the calendar landing page. We follow a limited number of same-site links.
+LINKED_EVENT_RULES = {
+    "CCA": {"path_prefixes": ("/events-calendar/",), "limit": 40},
+    "Letterform Archive": {"path_prefixes": ("/events/",), "limit": 40},
+    "Minnesota Street Project": {"path_prefixes": ("/events/",), "limit": 40},
+    "ICA San Francisco": {"path_prefixes": ("/events/", "/exhibitions/"), "limit": 30},
+}
 
 def clean(value):
     if not value:
@@ -195,6 +204,51 @@ def from_html(soup, page_url, source):
 
     return out
 
+
+def from_linked_event_pages(soup, page_url, source):
+    """Follow a limited number of same-site public event/exhibition pages."""
+    rule = LINKED_EVENT_RULES.get(source)
+    if not rule:
+        return []
+
+    base = urlparse(page_url)
+    candidates = []
+    seen_urls = set()
+    prefixes = tuple(p.rstrip("/") for p in rule["path_prefixes"])
+
+    for a in soup.select("a[href]"):
+        href = urljoin(page_url, a.get("href"))
+        parsed = urlparse(href)
+        path = parsed.path.rstrip("/")
+
+        if parsed.scheme not in {"http", "https"} or parsed.netloc != base.netloc:
+            continue
+        if href.rstrip("/") == page_url.rstrip("/"):
+            continue
+        if not any(path.startswith(prefix) for prefix in prefixes):
+            continue
+        if path in prefixes or href in seen_urls:
+            continue
+
+        seen_urls.add(href)
+        candidates.append(href)
+        if len(candidates) >= rule["limit"]:
+            break
+
+    out = []
+    for event_url in candidates:
+        try:
+            r = requests.get(event_url, headers=HEADERS, timeout=TIMEOUT)
+            r.raise_for_status()
+            event_soup = BeautifulSoup(r.text, "html.parser")
+            found = from_schema(event_soup, event_url, source)
+            if not found:
+                found = from_html(event_soup, event_url, source)
+            out.extend(found)
+        except Exception:
+            continue
+    return out
+
 def discover_feed_urls(response, page_url):
     """Find RSS/Atom feeds explicitly advertised by the page."""
     candidates = []
@@ -258,6 +312,10 @@ def scrape(source):
 
         # 4. HTML date/time fallback.
         results.extend(from_html(soup, url, name))
+
+        # 5. Some calendars put actual event data on linked public pages.
+        if not results:
+            results.extend(from_linked_event_pages(soup, url, name))
 
     except Exception as exc:
         print(f"[WARN] {name}: {exc}")
