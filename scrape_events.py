@@ -218,7 +218,20 @@ def from_linked_event_pages(soup, page_url, source):
     prefixes = tuple(p.rstrip("/") for p in rule["path_prefixes"])
 
     if source == "Letterform Archive":
-        anchors = soup.select("h3.card-title a[href], .card-title a[href]")
+        # Letterform's event cards use ordinary links to root-level slugs.
+        # Exclude navigation/shop paths so we only follow likely event pages.
+        anchors = []
+        excluded = {
+            "/events", "/search", "/cart", "/account", "/login",
+            "/register", "/collections", "/products", "/categories",
+            "/pages", "/blogs", "/contact",
+        }
+        for a in soup.select("a[href]"):
+            href = urljoin(page_url, a.get("href"))
+            parsed = urlparse(href)
+            path = parsed.path.rstrip("/")
+            if path and path.count("/") == 1 and path not in excluded:
+                anchors.append(a)
     else:
         anchors = soup.select("a[href]")
 
