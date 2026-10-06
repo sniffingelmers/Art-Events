@@ -267,7 +267,7 @@ def from_linked_event_pages(soup, page_url, source):
             if not found and source == "Letterform Archive":
                 text = clean(event_soup.get_text(" ", strip=True))
                 match = re.search(
-                    r"\\bDate\\s+(.+?)(?=\\s+(?:Time|What|Where)\\b|$)",
+                    r"\bDate\s+(.+?)(?=\s+(?:Time|What|Where)\b|$)",
                     text,
                     re.I,
                 )
