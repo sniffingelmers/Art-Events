@@ -19,7 +19,7 @@ MAX_ITEMS = 300
 # on the calendar landing page. We follow a limited number of same-site links.
 LINKED_EVENT_RULES = {
     "CCA": {"path_prefixes": ("/events-calendar/",), "limit": 40},
-    "Letterform Archive": {"path_prefixes": ("/products/", "/shop/"), "limit": 40},
+    "Letterform Archive": {"path_prefixes": ("/",), "limit": 40},
     "Minnesota Street Project": {"path_prefixes": ("/events/",), "limit": 40},
     "ICA San Francisco": {"path_prefixes": ("/events/", "/exhibitions/"), "limit": 30},
     "SFMOMA": {"path_prefixes": ("/event/",), "limit": 40},
@@ -217,7 +217,12 @@ def from_linked_event_pages(soup, page_url, source):
     seen_urls = set()
     prefixes = tuple(p.rstrip("/") for p in rule["path_prefixes"])
 
-    for a in soup.select("a[href]"):
+    if source == "Letterform Archive":
+        anchors = soup.select("h3.card-title a[href], .card-title a[href]")
+    else:
+        anchors = soup.select("a[href]")
+
+    for a in anchors:
         href = urljoin(page_url, a.get("href"))
         parsed = urlparse(href)
         path = parsed.path.rstrip("/")
@@ -245,6 +250,21 @@ def from_linked_event_pages(soup, page_url, source):
             found = from_schema(event_soup, event_url, source)
             if not found:
                 found = from_html(event_soup, event_url, source)
+
+            if not found and source == "Letterform Archive":
+                text = clean(event_soup.get_text(" ", strip=True))
+                match = re.search(
+                    r"\\bDate\\s+(.+?)(?=\\s+(?:Time|What|Where)\\b|$)",
+                    text,
+                    re.I,
+                )
+                if match:
+                    dt = parse_date(match.group(1))
+                    title_el = event_soup.find("h1")
+                    title = title_el.get_text(" ", strip=True) if title_el else ""
+                    x = item(title, event_url, dt, source, text)
+                    if x:
+                        found = [x]
             out.extend(found)
         except Exception:
             continue
