@@ -19,7 +19,7 @@ MAX_ITEMS = 300
 # on the calendar landing page. We follow a limited number of same-site links.
 LINKED_EVENT_RULES = {
     "CCA": {"path_prefixes": ("/events-calendar/",), "limit": 40},
-    "Letterform Archive": {"path_prefixes": ("/shop/",), "limit": 40},
+    "Letterform Archive": {"path_prefixes": ("/products/", "/shop/"), "limit": 40},
     "Minnesota Street Project": {"path_prefixes": ("/events/",), "limit": 40},
     "ICA San Francisco": {"path_prefixes": ("/events/", "/exhibitions/"), "limit": 30},
     "SFMOMA": {"path_prefixes": ("/event/",), "limit": 40},
@@ -222,7 +222,7 @@ def from_linked_event_pages(soup, page_url, source):
         parsed = urlparse(href)
         path = parsed.path.rstrip("/")
 
-        if parsed.scheme not in {"http", "https"} or parsed.netloc != base.netloc:
+        if parsed.scheme not in {"http", "https"} or not (parsed.netloc == base.netloc or parsed.netloc.endswith("." + base.netloc)):
             continue
         if href.rstrip("/") == page_url.rstrip("/"):
             continue
